@@ -1,0 +1,219 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:mediscan/screens/pharmacies_screen.dart';
+import 'package:get/get.dart';
+
+class ScanSearchScreen extends StatefulWidget {
+  const ScanSearchScreen({super.key, required this.location});
+  final Position location;
+
+  @override
+  State<ScanSearchScreen> createState() => _ScanSearchScreenState();
+}
+
+class _ScanSearchScreenState extends State<ScanSearchScreen> {
+  RxList<String> scannedText = [''].obs;
+  RxBool isLoading = false.obs;
+  TextEditingController controller = TextEditingController();
+
+  Future<void> pickAndScanImage() async {
+    final picker = ImagePicker();
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (context) => Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text("Take a photo"),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await _handleImage(ImageSource.camera, picker);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text("Choose from gallery"),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await _handleImage(ImageSource.gallery, picker);
+                  },
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  Future<void> _handleImage(ImageSource source, ImagePicker picker) async {
+    final image = await picker.pickImage(source: source);
+    if (image == null) return;
+    isLoading.value = true;
+
+    final inputImage = InputImage.fromFile(File(image.path));
+    final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+    final RecognizedText result = await textRecognizer.processImage(inputImage);
+
+    final List<String> scannedLines = [];
+    for (final block in result.blocks) {
+      for (final line in block.lines) {
+        scannedLines.add(line.text.trim());
+      }
+    }
+    scannedText.value = scannedLines;
+    isLoading.value = false;
+
+    textRecognizer.close();
+  }
+
+  void collectFromText() {
+    final List<String> products =
+        controller.text
+            .split(',')
+            .map((word) => word.trim())
+            .where((word) => word.isNotEmpty)
+            .toList();
+    scannedText.value = [...scannedText, ...products];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xfff8f9fa),
+      appBar: AppBar(
+        title: const Text("Scan & Recognize"),
+        centerTitle: true,
+        backgroundColor: Colors.teal[400],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        foregroundColor: Colors.black,
+        onPressed: pickAndScanImage,
+        label: const Text("Scan"),
+        icon: const Icon(Icons.document_scanner),
+        backgroundColor: Colors.teal,
+      ),
+      body: Obx(
+        () => Padding(
+          padding: const EdgeInsets.all(20),
+          child:
+              isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Scanned Text",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                height: 200,
+                                child: SingleChildScrollView(
+                                  child: Obx(
+                                    () => Text(
+                                      scannedText.isNotEmpty
+                                          ? scannedText.join('\n')
+                                          : "No text scanned yet.",
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 40),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            labelText: 'medicine separated by comma',
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.teal),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.blue),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(CupertinoIcons.text_insert),
+                              onPressed: collectFromText,
+                            ),
+                          ),
+                          controller: controller,
+                        ),
+                        SizedBox(height: 40),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.black,
+                              backgroundColor: Colors.blueAccent,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            icon: const Icon(Icons.send),
+                            label: const Text("Submit"),
+                            onPressed: () {
+                              print(
+                                "Passing medicines: ${scannedText.toList()}",
+                              );
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => PharmaciesScreen(
+                                        medicine: scannedText.toList(),
+                                        location: widget.location,
+                                      ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+        ),
+      ),
+    );
+  }
+}
