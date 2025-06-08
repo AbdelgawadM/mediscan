@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mediscan/models/user_model.dart';
 import 'package:mediscan/screens/scan_search_screen.dart';
 
 class LocationScreen extends StatefulWidget {
-  const LocationScreen({super.key});
+  const LocationScreen({super.key, required this.userModel});
+  final UserModel userModel;
 
   @override
   State<LocationScreen> createState() => _LocationScreenState();
@@ -57,13 +59,53 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
+          child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: Colors.green[100],
+                      child: const Icon(
+                        Icons.person,
+                        size: 32,
+                        color: Colors.green,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hi ${widget.userModel.name} 👋',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            "Welcome to MediScan",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 160),
+                // 🔽 Existing UI
                 Icon(Icons.my_location, size: 100, color: Colors.green[700]),
                 const SizedBox(height: 30),
                 const Text(
@@ -98,7 +140,7 @@ class _LocationScreenState extends State<LocationScreen> {
                                 strokeWidth: 2,
                               ),
                             )
-                            : const Icon(Icons.place),
+                            : const Icon(Icons.place, size: 30),
                     label: Text(
                       _isLoading ? "Locating..." : "Use My Location",
                       style: const TextStyle(fontSize: 16, color: Colors.black),

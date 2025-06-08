@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mediscan/helper/AuthMethods.dart';
 import 'package:mediscan/helper/custom_snack_bar.dart';
+import 'package:mediscan/models/user_model.dart';
 import 'package:mediscan/screens/location_screen.dart';
 import 'package:mediscan/screens/login_screen.dart';
 import 'package:mediscan/widgets/basic_text_form.dart';
@@ -20,7 +23,7 @@ class RegisterationScreen extends StatefulWidget {
 class _RegisterationScreenState extends State<RegisterationScreen> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  String? email, password;
+  String? email, password, name, phoneNumber;
 
   bool loading = false;
 
@@ -48,8 +51,16 @@ class _RegisterationScreenState extends State<RegisterationScreen> {
                           customHint: 'enter your email',
                         ),
                         BasicTextForm(
-                          onChange: (data) {},
+                          onChange: (data) {
+                            phoneNumber = data;
+                          },
                           customHint: 'enter your phone',
+                        ),
+                        BasicTextForm(
+                          onChange: (data) {
+                            name = data;
+                          },
+                          customHint: 'enter your name',
                         ),
                         BasicTextForm(
                           onChange: (data) {
@@ -57,10 +68,7 @@ class _RegisterationScreenState extends State<RegisterationScreen> {
                           },
                           customHint: 'enter your password',
                         ),
-                        BasicTextForm(
-                          onChange: (data) {},
-                          customHint: 'renter your password',
-                        ),
+
                         LoginRegistButton(
                           buttonText: 'Sign Up',
                           onTap: () async {
@@ -68,7 +76,16 @@ class _RegisterationScreenState extends State<RegisterationScreen> {
                               try {
                                 loading = true;
                                 setState(() {});
-                                await registerMethod();
+                                final UserCredential userCredential =
+                                    await Authmethods().registerUser(
+                                      email: email!,
+                                      password: password!,
+                                      name: name!,
+                                      phone: phoneNumber!,
+                                    );
+                                final UserModel userModel = await Authmethods()
+                                    .fetchUserData(userCredential.user!.uid);
+
                                 loading = false;
                                 setState(() {});
                                 customSnackBar(
@@ -81,7 +98,9 @@ class _RegisterationScreenState extends State<RegisterationScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) {
-                                        return const LocationScreen();
+                                        return LocationScreen(
+                                          userModel: userModel,
+                                        );
                                       },
                                     ),
                                   );
@@ -118,10 +137,5 @@ class _RegisterationScreenState extends State<RegisterationScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> registerMethod() async {
-    final credential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email!, password: password!);
   }
 }

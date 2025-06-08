@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mediscan/helper/AuthMethods.dart';
 import 'package:mediscan/helper/custom_snack_bar.dart';
+import 'package:mediscan/models/user_model.dart';
 import 'package:mediscan/screens/location_screen.dart';
 import 'package:mediscan/screens/registeration_screen.dart';
 import 'package:mediscan/widgets/basic_text_form.dart';
@@ -57,7 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               try {
                                 loading = true;
                                 setState(() {});
-                                await loginMethod();
+
+                                final UserModel userModel = await Authmethods()
+                                    .loginUser(email!, password!);
+
                                 loading = false;
                                 setState(() {});
                                 customSnackBar(context, 'success login ');
@@ -66,7 +71,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) {
-                                        return const LocationScreen();
+                                        return LocationScreen(
+                                          userModel: userModel,
+                                        );
                                       },
                                     ),
                                   );
@@ -114,10 +121,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> loginMethod() async {
+  Future<UserCredential> loginMethod() async {
     final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email!,
       password: password!,
     );
+    return credential;
   }
 }

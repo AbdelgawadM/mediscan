@@ -13,7 +13,7 @@ class PharmaciesScreen extends StatefulWidget {
     required this.medicine,
   });
   final Position location;
-  final List<String> medicine;
+  final List<dynamic> medicine;
 
   @override
   State<PharmaciesScreen> createState() => _PharmaciesScreenState();
@@ -32,7 +32,7 @@ class _PharmaciesScreenState extends State<PharmaciesScreen> {
   }
 
   Future<List<PharmacyModel>> getNearPharmaciesWithMedicines(
-    List<String> medicineNames,
+    List<dynamic> medicineNames,
   ) async {
     final snapshot =
         await FirebaseFirestore.instance.collection('pharmacies').get();
@@ -92,9 +92,18 @@ class _PharmaciesScreenState extends State<PharmaciesScreen> {
           isLoading
               ? const Center(child: CircularProgressIndicator())
               : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(height: 70),
+                    Text(
+                      'your near pharmacies  🎯',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     Expanded(
                       child: GridView.builder(
                         itemBuilder:

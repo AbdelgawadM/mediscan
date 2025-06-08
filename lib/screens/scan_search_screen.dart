@@ -16,7 +16,7 @@ class ScanSearchScreen extends StatefulWidget {
 }
 
 class _ScanSearchScreenState extends State<ScanSearchScreen> {
-  RxList<String> scannedText = [''].obs;
+  RxList<dynamic> scannedText = [].obs;
   RxBool isLoading = false.obs;
   TextEditingController controller = TextEditingController();
 
@@ -129,12 +129,24 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                "Scanned Text",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "Scanned Text",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      scannedText.clear();
+                                    },
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 10),
                               SizedBox(
