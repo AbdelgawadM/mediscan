@@ -3,6 +3,7 @@ import 'package:mediscan/models/medicine_model.dart';
 
 class PharmacyModel {
   final String name;
+  final String uid;
   final String phone;
   final String image;
   final double lat;
@@ -12,6 +13,7 @@ class PharmacyModel {
 
   PharmacyModel({
     required this.name,
+    required this.uid,
     required this.phone,
     required this.image,
     required this.lat,
@@ -28,6 +30,7 @@ class PharmacyModel {
 
     return PharmacyModel(
       name: map['name'] ?? 'Unknown Name',
+      uid: map['uid'] ?? '123',
       phone: map['phone'] ?? '0000000000',
       image: map['image'] ?? 'assets/pharmacies/default.jpg',
       address: map['address'] ?? 'No Address',
@@ -40,6 +43,7 @@ class PharmacyModel {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
+      'uid': uid,
       'phone': phone,
       'image': image,
       'address': address,

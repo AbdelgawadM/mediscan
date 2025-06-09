@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:mediscan/screens/pharmacies_screen.dart';
+import 'package:mediscan/screens/user_interface/pharmacies_screen.dart';
 import 'package:get/get.dart';
 
 class ScanSearchScreen extends StatefulWidget {

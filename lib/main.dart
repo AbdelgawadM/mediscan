@@ -4,9 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:mediscan/firebase_options.dart';
 import 'package:mediscan/models/user_model.dart';
-import 'package:mediscan/screens/location_screen.dart';
-import 'package:mediscan/screens/registeration_screen.dart';
-import 'package:mediscan/screens/scan_search_screen.dart';
+import 'package:mediscan/screens/pharmacy_interface/pharmacy_registeration_screen.dart';
+import 'package:mediscan/screens/user_interface/location_screen.dart';
+import 'package:mediscan/screens/user_interface/user_registeration_screen.dart';
+import 'package:mediscan/screens/user_interface/scan_search_screen.dart';
+import 'package:mediscan/screens/user_type_selection_screen.dart';
 
 // final List<PharmacyModel> pharmacies = const [
 //   PharmacyModel(
@@ -110,10 +112,10 @@ class Mediscan extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: LocationScreen(
         userModel: UserModel(
-          uid: 'uid',
-          name: 'Abdo',
-          phone: '01095089012',
-          email: 'email',
+          uid: '123',
+          name: 'name',
+          phone: '0194523165',
+          email: 'aaaaaaaaaaaaaaaaaaaa',
         ),
       ),
     );

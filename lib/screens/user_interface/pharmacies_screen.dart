@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mediscan/models/medicine_model.dart';
 import 'package:mediscan/models/pharmacy_model.dart';
-import 'package:mediscan/screens/pharmacy_screen.dart';
+import 'package:mediscan/screens/user_interface/pharmacy_screen.dart';
 import 'package:mediscan/widgets/pharmacy_first_item.dart';
 
 class PharmaciesScreen extends StatefulWidget {

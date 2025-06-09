@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mediscan/screens/pharmacy_screen.dart';
 
 class PharmacyFirstItem extends StatelessWidget {
   const PharmacyFirstItem({super.key, required this.name, required this.image});

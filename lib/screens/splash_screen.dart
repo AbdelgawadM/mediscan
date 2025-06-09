@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediscan/screens/registeration_screen.dart';
+import 'package:mediscan/screens/user_type_selection_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return const RegisterationScreen();
+            return UserTypeSelectionScreen();
           },
         ),
       );

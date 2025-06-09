@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mediscan/models/pharmacy_model.dart';
 import 'package:mediscan/models/user_model.dart';
 
 class Authmethods {
@@ -35,6 +36,19 @@ class Authmethods {
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (doc.exists) {
       return UserModel.fromMap(doc.data()!);
+    } else {
+      throw Exception("User data not found");
+    }
+  }
+
+  Future<PharmacyModel> fetchPharmacyData(String uid) async {
+    final doc =
+        await FirebaseFirestore.instance
+            .collection('pharmacies')
+            .doc(uid)
+            .get();
+    if (doc.exists) {
+      return PharmacyModel.fromMap(doc.data()!);
     } else {
       throw Exception("User data not found");
     }

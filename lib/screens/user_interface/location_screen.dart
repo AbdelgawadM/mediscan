@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mediscan/models/user_model.dart';
-import 'package:mediscan/screens/scan_search_screen.dart';
+import 'package:mediscan/screens/user_interface/scan_search_screen.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key, required this.userModel});
