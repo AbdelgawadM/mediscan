@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:mediscan/firebase_options.dart';
+import 'package:mediscan/models/medicine_model.dart';
 import 'package:mediscan/models/user_model.dart';
 import 'package:mediscan/screens/pharmacy_interface/pharmacy_registeration_screen.dart';
 import 'package:mediscan/screens/user_interface/location_screen.dart';
@@ -66,9 +68,30 @@ import 'package:mediscan/screens/user_type_selection_screen.dart';
 //   final firestore = FirebaseFirestore.instance;
 
 //   final medicines = [
-//     MedicineModel(name: 'Panadol', price: 20.0, quantity: 10),
-//     MedicineModel(name: 'Amoxil', price: 35.0, quantity: 5),
-//     MedicineModel(name: 'Vitamin C', price: 15.0, quantity: 8),
+//     MedicineModel(
+//       name: 'Panadol',
+//       price: 20.0,
+//       quantity: 10,
+//       image: 'assets/medicine/panadol.jpg',
+//     ),
+//     MedicineModel(
+//       name: 'Amoxil',
+//       price: 35.0,
+//       quantity: 5,
+//       image: 'assets/medicine/amoxil.jpeg',
+//     ),
+//     MedicineModel(
+//       name: 'Vitamin',
+//       price: 15.0,
+//       quantity: 8,
+//       image: 'assets/medicine/vitamin.jpeg',
+//     ),
+//     MedicineModel(
+//       name: 'flagyl',
+//       price: 15.0,
+//       quantity: 8,
+//       image: 'assets/medicine/flagyl.jpeg',
+//     ),
 //   ];
 
 //   final pharmacies = await firestore.collection('pharmacies').get();
@@ -110,14 +133,7 @@ class Mediscan extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       useInheritedMediaQuery: true,
       debugShowCheckedModeBanner: false,
-      home: LocationScreen(
-        userModel: UserModel(
-          uid: '123',
-          name: 'name',
-          phone: '0194523165',
-          email: 'aaaaaaaaaaaaaaaaaaaa',
-        ),
-      ),
+      home: UserTypeSelectionScreen(),
     );
   }
 }

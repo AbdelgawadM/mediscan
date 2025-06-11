@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mediscan/consts.dart';
 import 'package:mediscan/models/medicine_model.dart';
 import 'package:mediscan/models/pharmacy_model.dart';
 import 'package:mediscan/screens/user_interface/pharmacy_screen.dart';
@@ -9,11 +10,14 @@ import 'package:mediscan/widgets/pharmacy_first_item.dart';
 class PharmaciesScreen extends StatefulWidget {
   const PharmaciesScreen({
     super.key,
-    required this.location,
     required this.medicine,
+    required this.lat,
+    required this.long,
+    required this.range,
   });
-  final Position location;
   final List<dynamic> medicine;
+  final double lat, long;
+  final String range;
 
   @override
   State<PharmaciesScreen> createState() => _PharmaciesScreenState();
@@ -47,11 +51,11 @@ class _PharmaciesScreenState extends State<PharmaciesScreen> {
       double distance = Geolocator.distanceBetween(
         pharmacy.lat,
         pharmacy.long,
-        widget.location.latitude,
-        widget.location.longitude,
+        widget.lat,
+        widget.long,
       );
 
-      if (distance < 500) {
+      if (distance < double.parse(widget.range)) {
         // Get all medicines in this pharmacy
         final productsSnapshot =
             await doc.reference.collection('products').get();
@@ -88,22 +92,33 @@ class _PharmaciesScreenState extends State<PharmaciesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          "Pharmacies",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+        ),
+        centerTitle: false,
+        backgroundColor: kPrimaryColor,
+      ),
       body:
           isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+                child: CircularProgressIndicator(color: kPrimaryColor),
+              )
               : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 70),
+                    SizedBox(height: 24),
                     Text(
-                      'your near pharmacies  🎯',
+                      'Your Near Pharmacies  🎯',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    SizedBox(height: 48),
                     Expanded(
                       child: GridView.builder(
                         itemBuilder:
@@ -114,6 +129,8 @@ class _PharmaciesScreenState extends State<PharmaciesScreen> {
                                   MaterialPageRoute(
                                     builder:
                                         (context) => PharmacyScreen(
+                                          lat: widget.lat,
+                                          long: widget.long,
                                           pharmacyModel: nearPharmacies[index],
                                         ),
                                   ),

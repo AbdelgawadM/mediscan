@@ -34,7 +34,7 @@ class _UserRegisterationScreenState extends State<UserRegisterationScreen> {
     return ModalProgressHUD(
       inAsyncCall: loading,
       child: Scaffold(
-        backgroundColor: kPrimarybgColor,
+        backgroundColor: Colors.white,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),

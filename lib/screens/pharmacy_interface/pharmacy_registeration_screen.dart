@@ -28,10 +28,10 @@ class _PharmacyRegisterScreenState extends State<PharmacyRegisterScreen> {
   final TextEditingController latController = TextEditingController();
   final TextEditingController longController = TextEditingController();
 
-  final List<MedicineModel> defaultMedicines = [
-    MedicineModel(name: 'Paracetamol', quantity: 100, price: 10.0),
-    MedicineModel(name: 'Aspirin', quantity: 50, price: 15.0),
-  ];
+  // final List<MedicineModel> defaultMedicines = [
+  //   MedicineModel(name: 'Paracetamol', quantity: 100, price: 10.0),
+  //   MedicineModel(name: 'Aspirin', quantity: 50, price: 15.0),
+  // ];
 
   bool isLoading = false;
   bool isHidden = false;

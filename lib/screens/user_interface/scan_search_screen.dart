@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:mediscan/consts.dart';
 import 'package:mediscan/screens/user_interface/pharmacies_screen.dart';
 import 'package:get/get.dart';
 
 class ScanSearchScreen extends StatefulWidget {
-  const ScanSearchScreen({super.key, required this.location});
-  final Position location;
+  const ScanSearchScreen({super.key, required this.lat, required this.long});
+  final double lat, long;
 
   @override
   State<ScanSearchScreen> createState() => _ScanSearchScreenState();
@@ -18,7 +19,9 @@ class ScanSearchScreen extends StatefulWidget {
 class _ScanSearchScreenState extends State<ScanSearchScreen> {
   RxList<dynamic> scannedText = [].obs;
   RxBool isLoading = false.obs;
-  TextEditingController controller = TextEditingController();
+  TextEditingController medicinecontroller = TextEditingController();
+  TextEditingController rangecontroller = TextEditingController();
+  List<TextEditingController> controllers = [];
 
   Future<void> pickAndScanImage() async {
     final picker = ImagePicker();
@@ -68,10 +71,13 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
     final List<String> scannedLines = [];
     for (final block in result.blocks) {
       for (final line in block.lines) {
-        scannedLines.add(line.text.trim());
+        scannedLines.add(line.text.toLowerCase().trim());
       }
     }
     scannedText.value = scannedLines;
+    controllers =
+        scannedLines.map((text) => TextEditingController(text: text)).toList();
+
     isLoading.value = false;
 
     textRecognizer.close();
@@ -79,50 +85,62 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
 
   void collectFromText() {
     final List<String> products =
-        controller.text
+        medicinecontroller.text
             .split(',')
-            .map((word) => word.trim())
+            .map((word) => word.toLowerCase().trim())
             .where((word) => word.isNotEmpty)
             .toList();
     scannedText.value = [...scannedText, ...products];
+    controllers.addAll(
+      products.map((text) => TextEditingController(text: text)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff8f9fa),
+      resizeToAvoidBottomInset: true,
+
+      backgroundColor: kPrimarybgColor,
       appBar: AppBar(
-        title: const Text("Scan & Recognize"),
-        centerTitle: true,
-        backgroundColor: Colors.teal[400],
+        title: const Text(
+          "Scan & Search",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+        ),
+        centerTitle: false,
+        backgroundColor: kPrimaryColor,
       ),
       floatingActionButton: FloatingActionButton.extended(
         foregroundColor: Colors.black,
         onPressed: pickAndScanImage,
         label: const Text("Scan"),
         icon: const Icon(Icons.document_scanner),
-        backgroundColor: Colors.teal,
+        backgroundColor: kPrimaryColor,
       ),
       body: Obx(
         () => Padding(
           padding: const EdgeInsets.all(20),
           child:
               isLoading.value
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(
+                    child: CircularProgressIndicator(color: kPrimaryColor),
+                  )
                   : SingleChildScrollView(
                     child: Column(
                       children: [
                         Container(
+                          margin: EdgeInsets.symmetric(horizontal: 10),
                           width: double.infinity,
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: kSecandryColor,
                             borderRadius: BorderRadius.circular(12),
+
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black12,
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
+                                blurRadius: 4,
+                                offset: const Offset(8, 8),
                               ),
                             ],
                           ),
@@ -140,25 +158,91 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
+
                                   IconButton(
                                     onPressed: () {
                                       scannedText.clear();
                                     },
-                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    icon: Icon(
+                                      Icons.delete_sweep_sharp,
+                                      color: Colors.red,
+                                    ),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 10),
                               SizedBox(
-                                height: 200,
+                                height: 300,
                                 child: SingleChildScrollView(
                                   child: Obx(
-                                    () => Text(
-                                      scannedText.isNotEmpty
-                                          ? scannedText.join('\n')
-                                          : "No text scanned yet.",
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
+                                    () =>
+                                        scannedText.isNotEmpty
+                                            ? Column(
+                                              children: List.generate(scannedText.length, (
+                                                index,
+                                              ) {
+                                                final controller =
+                                                    controllers[index];
+
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        bottom: 10,
+                                                      ),
+                                                  child: TextFormField(
+                                                    textDirection:
+                                                        TextDirection.ltr,
+                                                    textAlign: TextAlign.left,
+                                                    controller: controller,
+                                                    onChanged: (val) {
+                                                      scannedText[index] =
+                                                          val
+                                                              .toLowerCase()
+                                                              .trim();
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      hintText:
+                                                          "Scanned line ${index + 1}",
+                                                      enabledBorder:
+                                                          OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
+                                                                ),
+                                                          ),
+                                                      focusedBorder:
+                                                          OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
+                                                                ),
+                                                            borderSide: BorderSide(
+                                                              color:
+                                                                  kPrimaryColor,
+                                                            ),
+                                                          ),
+                                                      suffixIcon: IconButton(
+                                                        icon: const Icon(
+                                                          Icons.delete,
+                                                          color: kPrimaryColor,
+                                                        ),
+                                                        onPressed: () {
+                                                          scannedText.removeAt(
+                                                            index,
+                                                          );
+                                                          controllers.removeAt(
+                                                            index,
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                            )
+                                            : const Text(
+                                              "No text scanned yet.",
+                                            ),
                                   ),
                                 ),
                               ),
@@ -173,21 +257,39 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                             ),
-                            labelText: 'medicine separated by comma',
+                            labelText: 'Distance Range ?',
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.teal),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.blue),
+                              borderSide: BorderSide(color: kPrimaryColor),
+                            ),
+                          ),
+                          controller: rangecontroller,
+                        ),
+                        SizedBox(height: 20),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            labelText: 'medicine separated by comma',
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: kPrimaryColor),
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(CupertinoIcons.text_insert),
                               onPressed: collectFromText,
                             ),
                           ),
-                          controller: controller,
+                          controller: medicinecontroller,
                         ),
                         SizedBox(height: 40),
                         SizedBox(
@@ -195,7 +297,7 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.black,
-                              backgroundColor: Colors.blueAccent,
+                              backgroundColor: kPrimaryColor,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -204,17 +306,15 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
                             icon: const Icon(Icons.send),
                             label: const Text("Submit"),
                             onPressed: () {
-                              print(
-                                "Passing medicines: ${scannedText.toList()}",
-                              );
-
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder:
                                       (context) => PharmaciesScreen(
+                                        range: rangecontroller.text,
                                         medicine: scannedText.toList(),
-                                        location: widget.location,
+                                        lat: widget.lat,
+                                        long: widget.long,
                                       ),
                                 ),
                               );

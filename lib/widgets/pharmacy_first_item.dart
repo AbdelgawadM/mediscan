@@ -16,7 +16,7 @@ class PharmacyFirstItem extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withValues(alpha: 0.9),
-            blurRadius: 10,
+            blurRadius: 5,
             // offset: const Offset(0, -1),
           ),
         ],

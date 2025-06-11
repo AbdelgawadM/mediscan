@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mediscan/consts.dart';
 import 'package:mediscan/models/pharmacy_model.dart';
 
 class PharmacyAdminScreen extends StatefulWidget {
@@ -199,13 +200,17 @@ class _PharmacyAdminScreenState extends State<PharmacyAdminScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kPrimarybgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text('Pharmacy Admin'),
+        backgroundColor: kPrimaryColor,
+        title: const Text(
+          'Pharmacy Admin',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+        ),
+        centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add, color: Colors.black, size: 28),
             onPressed: showAddMedicineDialog,
           ),
         ],
@@ -215,68 +220,96 @@ class _PharmacyAdminScreenState extends State<PharmacyAdminScreen> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    widget.pharmacyModel.image,
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.pharmacyModel.name,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+            Card(
+              color: kSecandryColor,
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 📷 Pharmacy Image
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        widget.pharmacyModel.image,
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
+                    ),
+                    const SizedBox(width: 16),
+
+                    // 📄 Pharmacy Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.location_on,
-                            color: Colors.redAccent,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              widget.pharmacyModel.address,
-                              style: const TextStyle(fontSize: 14),
+                          // 🏪 Name
+                          Text(
+                            widget.pharmacyModel.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
+                          const SizedBox(height: 8),
+
+                          // 📍 Address + Location
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  widget.pharmacyModel.address,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey.shade700,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.location_on,
+                                color: Colors.red,
+                                size: 24,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+
+                          // ☎️ Phone + Call
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  widget.pharmacyModel.phone,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey.shade700,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.call,
+                                color: Colors.green,
+                                size: 24,
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.phone,
-                            color: Colors.green,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            widget.pharmacyModel.phone,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 24),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: productsRef.snapshots(),
@@ -301,10 +334,11 @@ class _PharmacyAdminScreenState extends State<PharmacyAdminScreen> {
                       final quantity = data['quantity']?.toInt() ?? 0;
 
                       return Card(
+                        color: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        elevation: 3,
+                        elevation: 2,
                         margin: const EdgeInsets.symmetric(
                           vertical: 8,
                           horizontal: 8,
