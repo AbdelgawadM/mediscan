@@ -32,6 +32,7 @@ class _UserRegisterationScreenState extends State<UserRegisterationScreen> {
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
+      color: kPrimaryColor,
       inAsyncCall: loading,
       child: Scaffold(
         backgroundColor: Colors.white,

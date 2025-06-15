@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mediscan/consts.dart';
 import 'package:mediscan/helper/AuthMethods.dart';
 import 'package:mediscan/helper/custom_snack_bar.dart';
 import 'package:mediscan/models/user_model.dart';
@@ -28,6 +29,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
+      color: kPrimaryColor,
       inAsyncCall: loading,
       child: Scaffold(
         backgroundColor: Colors.white,

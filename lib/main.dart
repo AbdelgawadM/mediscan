@@ -7,6 +7,7 @@ import 'package:mediscan/firebase_options.dart';
 import 'package:mediscan/models/medicine_model.dart';
 import 'package:mediscan/models/user_model.dart';
 import 'package:mediscan/screens/pharmacy_interface/pharmacy_registeration_screen.dart';
+import 'package:mediscan/screens/splash_screen.dart';
 import 'package:mediscan/screens/user_interface/location_screen.dart';
 import 'package:mediscan/screens/user_interface/user_registeration_screen.dart';
 import 'package:mediscan/screens/user_interface/scan_search_screen.dart';
@@ -118,7 +119,7 @@ Future<void> main() async {
 
   runApp(
     DevicePreview(
-      enabled: false, // Set to false to disable it in production
+      enabled: true, // Set to false to disable it in production
       builder: (context) => const Mediscan(),
     ),
   );
@@ -133,7 +134,7 @@ class Mediscan extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       useInheritedMediaQuery: true,
       debugShowCheckedModeBanner: false,
-      home: UserTypeSelectionScreen(),
+      home: SplashScreen(),
     );
   }
 }

@@ -27,6 +27,7 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
     final picker = ImagePicker();
 
     showModalBottomSheet(
+      backgroundColor: kSecandryColor,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),

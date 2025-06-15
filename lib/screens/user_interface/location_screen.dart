@@ -216,18 +216,6 @@ class _LocationScreenState extends State<LocationScreen> {
               ),
               SizedBox(height: 20),
               TextFormField(
-                onFieldSubmitted: (value) async {
-                  final locations = await locationFromAddress(value);
-                  long = locations.first.longitude;
-                  lat = locations.first.latitude;
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => ScanSearchScreen(lat: lat!, long: long!),
-                    ),
-                  );
-                },
                 controller: controller,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(
@@ -236,7 +224,21 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                   labelStyle: TextStyle(color: Colors.black),
                   suffixIcon: IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final locations = await locationFromAddress(
+                        controller.text,
+                      );
+                      long = locations.first.longitude;
+                      lat = locations.first.latitude;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  ScanSearchScreen(lat: lat!, long: long!),
+                        ),
+                      );
+                    },
                     icon: Icon(Icons.send, color: kPrimaryColor),
                   ),
                   label: Text(
