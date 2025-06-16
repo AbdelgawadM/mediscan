@@ -30,23 +30,23 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           controller: pageController, // Ensure PageView is controlled
           children: [
             BoardItem(
-              title: 'Stay Updated with Match time',
+              title: 'Understand Prescriptions 🩺',
               description:
-                  'Get real-time updates on match time all over the world!',
-              image: 'assets/on_boardings/basket1.png',
+                  'Quickly scan handwritten medical prescriptions using your camera',
+              image: 'assets/onBoarding/on2.png',
             ),
 
             BoardItem(
-              title: 'All Stats in One Place',
+              title: 'Find Pharmacies Easily 📍',
               description:
-                  'Track performance, statistics, and key match highlights with ease.',
-              image: 'assets/on_boardings/basket3.png',
+                  'Allow location access so we can show pharmacies close to you .',
+              image: 'assets/onBoarding/on1.png',
             ),
             BoardItem(
-              title: 'Check Team Lineups',
+              title: 'just scan 📷',
               description:
-                  'Explore team rosters and starting lineups for every match',
-              image: 'assets/on_boardings/basket2.png',
+                  'Easily scan printed prescriptions to detect and search for medicines instantly',
+              image: 'assets/onBoarding/on3.png',
             ),
           ],
         ),

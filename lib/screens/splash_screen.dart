@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediscan/screens/on_boarding_screen.dart';
 import 'package:mediscan/screens/user_type_selection_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return UserTypeSelectionScreen();
+            return OnBoardingScreen();
           },
         ),
       );

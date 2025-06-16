@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediscan/consts.dart';
 
 class BoardItem extends StatelessWidget {
   const BoardItem({
@@ -12,6 +13,7 @@ class BoardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kPrimarybgColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
@@ -29,6 +31,7 @@ class BoardItem extends StatelessWidget {
                 fontWeight: FontWeight.w400,
               ),
             ),
+            SizedBox(height: 15),
             Text(
               textAlign: TextAlign.center,
               description,
