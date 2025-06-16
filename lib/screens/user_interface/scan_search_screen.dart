@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:mediscan/consts.dart';
@@ -9,8 +9,14 @@ import 'package:mediscan/screens/user_interface/pharmacies_screen.dart';
 import 'package:get/get.dart';
 
 class ScanSearchScreen extends StatefulWidget {
-  const ScanSearchScreen({super.key, required this.lat, required this.long});
+  const ScanSearchScreen({
+    super.key,
+    required this.lat,
+    required this.long,
+    required this.placemark,
+  });
   final double lat, long;
+  final Placemark placemark;
 
   @override
   State<ScanSearchScreen> createState() => _ScanSearchScreenState();
@@ -21,6 +27,7 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
   RxBool isLoading = false.obs;
   TextEditingController medicinecontroller = TextEditingController();
   TextEditingController rangecontroller = TextEditingController();
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   List<TextEditingController> controllers = [];
 
   Future<void> pickAndScanImage() async {
@@ -76,6 +83,7 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
       }
     }
     scannedText.value = scannedLines;
+
     controllers =
         scannedLines.map((text) => TextEditingController(text: text)).toList();
 
@@ -127,202 +135,245 @@ class _ScanSearchScreenState extends State<ScanSearchScreen> {
                     child: CircularProgressIndicator(color: kPrimaryColor),
                   )
                   : SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: kSecandryColor,
-                            borderRadius: BorderRadius.circular(12),
-
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                offset: const Offset(8, 8),
+                    child: Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  overflow:
+                                      TextOverflow
+                                          .ellipsis, // Add this line to truncate with "..."
+                                  maxLines: 1,
+                                  '${widget.placemark.street!}-${widget.placemark.administrativeArea} ',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: kPrimaryColor,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.location_on,
+                                size: 25,
+                                color: kPrimaryColor,
                               ),
                             ],
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Scanned Text",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                          SizedBox(height: 20),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 10),
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: kSecandryColor,
+                              borderRadius: BorderRadius.circular(12),
 
-                                  IconButton(
-                                    onPressed: () {
-                                      scannedText.clear();
-                                    },
-                                    icon: Icon(
-                                      Icons.delete_sweep_sharp,
-                                      color: Colors.red,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 4,
+                                  offset: const Offset(8, 8),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "Scanned Text",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              SizedBox(
-                                height: 300,
-                                child: SingleChildScrollView(
-                                  child: Obx(
-                                    () =>
-                                        scannedText.isNotEmpty
-                                            ? Column(
-                                              children: List.generate(scannedText.length, (
-                                                index,
-                                              ) {
-                                                final controller =
-                                                    controllers[index];
 
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        bottom: 10,
-                                                      ),
-                                                  child: TextFormField(
-                                                    textDirection:
-                                                        TextDirection.ltr,
-                                                    textAlign: TextAlign.left,
-                                                    controller: controller,
-                                                    onChanged: (val) {
-                                                      scannedText[index] =
-                                                          val
-                                                              .toLowerCase()
-                                                              .trim();
-                                                    },
-                                                    decoration: InputDecoration(
-                                                      hintText:
-                                                          "Scanned line ${index + 1}",
-                                                      enabledBorder:
-                                                          OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  12,
-                                                                ),
-                                                          ),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  12,
-                                                                ),
-                                                            borderSide: BorderSide(
-                                                              color:
-                                                                  kPrimaryColor,
-                                                            ),
-                                                          ),
-                                                      suffixIcon: IconButton(
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          color: kPrimaryColor,
+                                    IconButton(
+                                      onPressed: () {
+                                        scannedText.clear();
+                                      },
+                                      icon: Icon(
+                                        Icons.delete_sweep_sharp,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                SizedBox(
+                                  height: 300,
+                                  child: SingleChildScrollView(
+                                    child: Obx(
+                                      () =>
+                                          scannedText.isNotEmpty
+                                              ? Column(
+                                                children: List.generate(scannedText.length, (
+                                                  index,
+                                                ) {
+                                                  final controller =
+                                                      controllers[index];
+
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                          bottom: 10,
                                                         ),
-                                                        onPressed: () {
-                                                          scannedText.removeAt(
-                                                            index,
-                                                          );
-                                                          controllers.removeAt(
-                                                            index,
-                                                          );
-                                                        },
+                                                    child: TextFormField(
+                                                      textDirection:
+                                                          TextDirection.ltr,
+                                                      textAlign: TextAlign.left,
+                                                      controller: controller,
+                                                      onChanged: (val) {
+                                                        scannedText[index] =
+                                                            val
+                                                                .toLowerCase()
+                                                                .trim();
+                                                      },
+                                                      decoration: InputDecoration(
+                                                        hintText:
+                                                            "Scanned line ${index + 1}",
+                                                        enabledBorder:
+                                                            OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    12,
+                                                                  ),
+                                                            ),
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    12,
+                                                                  ),
+                                                              borderSide:
+                                                                  BorderSide(
+                                                                    color:
+                                                                        kPrimaryColor,
+                                                                  ),
+                                                            ),
+                                                        suffixIcon: IconButton(
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color:
+                                                                kPrimaryColor,
+                                                          ),
+                                                          onPressed: () {
+                                                            scannedText
+                                                                .removeAt(
+                                                                  index,
+                                                                );
+                                                            controllers
+                                                                .removeAt(
+                                                                  index,
+                                                                );
+                                                          },
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                );
-                                              }),
-                                            )
-                                            : const Text(
-                                              "No text scanned yet.",
-                                            ),
+                                                  );
+                                                }),
+                                              )
+                                              : const Text(
+                                                "No text scanned yet.",
+                                              ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 40),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            labelText: 'Distance Range ?',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: kPrimaryColor),
+                              ],
                             ),
                           ),
-                          controller: rangecontroller,
-                        ),
-                        SizedBox(height: 20),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            labelText: 'medicine separated by comma',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: kPrimaryColor),
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(CupertinoIcons.text_insert),
-                              onPressed: collectFromText,
-                            ),
-                          ),
-                          controller: medicinecontroller,
-                        ),
-                        SizedBox(height: 40),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.black,
-                              backgroundColor: kPrimaryColor,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            icon: const Icon(Icons.send),
-                            label: const Text("Submit"),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => PharmaciesScreen(
-                                        range: rangecontroller.text,
-                                        medicine: scannedText.toList(),
-                                        lat: widget.lat,
-                                        long: widget.long,
-                                      ),
-                                ),
-                              );
+                          SizedBox(height: 40),
+                          TextFormField(
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'field is required';
+                              }
+                              return null;
                             },
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelStyle: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              labelText: 'Distance Range ?',
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: kPrimaryColor),
+                              ),
+                            ),
+                            controller: rangecontroller,
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 20),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelStyle: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              labelText: 'medicine separated by comma',
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: kPrimaryColor),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(CupertinoIcons.text_insert),
+                                onPressed: collectFromText,
+                              ),
+                            ),
+                            controller: medicinecontroller,
+                          ),
+                          SizedBox(height: 40),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.black,
+                                backgroundColor: kPrimaryColor,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              icon: const Icon(Icons.send),
+                              label: const Text("Submit"),
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => PharmaciesScreen(
+                                            range: rangecontroller.text,
+                                            medicine: scannedText.toList(),
+                                            lat: widget.lat,
+                                            long: widget.long,
+                                          ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
         ),

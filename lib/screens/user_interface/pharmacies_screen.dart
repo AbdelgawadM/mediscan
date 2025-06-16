@@ -66,7 +66,7 @@ class _PharmaciesScreenState extends State<PharmaciesScreen> {
                 .toList();
 
         // Filter medicines that match the searched names
-        final matchedMedicines =
+        final List<MedicineModel> matchedMedicines =
             allMedicines
                 .where((med) => medicineNames.contains(med.name.toLowerCase()))
                 .toList();
@@ -91,7 +91,7 @@ class _PharmaciesScreenState extends State<PharmaciesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kPrimarybgColor,
       appBar: AppBar(
         title: const Text(
           "Pharmacies",
@@ -118,7 +118,7 @@ class _PharmaciesScreenState extends State<PharmaciesScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(height: 48),
+                    SizedBox(height: 24),
                     Expanded(
                       child: GridView.builder(
                         itemBuilder:
@@ -137,13 +137,17 @@ class _PharmaciesScreenState extends State<PharmaciesScreen> {
                                 );
                               },
                               child: PharmacyFirstItem(
+                                allLenght: widget.medicine.length,
+                                existLenght:
+                                    nearPharmacies[index].medicines?.length ??
+                                    0,
                                 name: nearPharmacies[index].name,
                                 image: nearPharmacies[index].image,
                               ),
                             ),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
+                              crossAxisCount: 1,
                             ),
                         itemCount: nearPharmacies.length,
                       ),

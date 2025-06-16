@@ -188,7 +188,7 @@ class PharmacyScreen extends StatelessWidget {
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.asset(
-                          medicine.image,
+                          'assets/medicine/default.jpg',
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,

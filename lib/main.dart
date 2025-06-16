@@ -119,7 +119,7 @@ Future<void> main() async {
 
   runApp(
     DevicePreview(
-      enabled: true, // Set to false to disable it in production
+      enabled: false, // Set to false to disable it in production
       builder: (context) => const Mediscan(),
     ),
   );
